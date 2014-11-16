@@ -5,6 +5,7 @@
  */
 package servicios;
 
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -13,6 +14,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -109,15 +111,41 @@ public class PersonasFacadeREST extends AbstractFacade<Personas> {
     @Path("existePorCedula/cedula={cedula}")
     @Produces("text/plain")
     public Boolean existePorCedula(@PathParam("cedula") String cedula) {
-        TypedQuery<Personas> q;
-        q = getEntityManager().createNamedQuery("Personas.findByCedula", Personas.class);
-        q.setParameter("cedula", cedula);
-        try {
-            q.getSingleResult();
-            return true;
-        } catch (NoResultException e) {
+        Boolean res=true;
+        if (buscaPersona(cedula)==null) {
+            res=false;
+        }
+        return res; 
+    }
+
+    @POST
+    @Path("registro")
+    @Produces({"text/plain", "application/json"})
+    public Boolean createPorParametros(@FormParam("cedula") String cedula,
+            @FormParam("nombres") String nombres,
+            @FormParam("apellidos") String apellidos,
+            @FormParam("edad") Integer edad) {
+        if (buscaPersona(cedula)==null) {
+            try {
+                Personas persona = new Personas(cedula, nombres, apellidos, edad, new Date(), new Date());
+                super.create(persona);
+                return true;
+            } catch (NullPointerException e) {
+                return false;
+            }
+        } else {
             return false;
         }
     }
 
+    public Personas buscaPersona(String cedula) {
+        TypedQuery<Personas> q;
+        q = getEntityManager().createNamedQuery("Personas.findByCedula", Personas.class);
+        q.setParameter("cedula", cedula);
+        try {
+            return q.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
 }

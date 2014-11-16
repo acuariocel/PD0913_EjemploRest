@@ -39,6 +39,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Personas.findByFechaHoraRegistro", query = "SELECT p FROM Personas p WHERE p.fechaHoraRegistro = :fechaHoraRegistro"),
     @NamedQuery(name = "Personas.findByFechaHoraModificacion", query = "SELECT p FROM Personas p WHERE p.fechaHoraModificacion = :fechaHoraModificacion")})
 public class Personas implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -84,6 +85,15 @@ public class Personas implements Serializable {
 
     public Personas(Integer idPersona, String cedula, String nombres, String apellidos, int edad, Date fechaHoraRegistro, Date fechaHoraModificacion) {
         this.idPersona = idPersona;
+        this.cedula = cedula;
+        this.nombres = nombres;
+        this.apellidos = apellidos;
+        this.edad = edad;
+        this.fechaHoraRegistro = fechaHoraRegistro;
+        this.fechaHoraModificacion = fechaHoraModificacion;
+    }
+
+    public Personas(String cedula, String nombres, String apellidos, int edad, Date fechaHoraRegistro, Date fechaHoraModificacion) {
         this.cedula = cedula;
         this.nombres = nombres;
         this.apellidos = apellidos;
@@ -172,5 +182,5 @@ public class Personas implements Serializable {
     public String toString() {
         return "modelo.Personas[ idPersona=" + idPersona + " ]";
     }
-    
+
 }
