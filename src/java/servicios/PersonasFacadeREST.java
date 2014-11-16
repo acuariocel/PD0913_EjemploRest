@@ -38,6 +38,28 @@ public class PersonasFacadeREST extends AbstractFacade<Personas> {
         super(Personas.class);
     }
 
+    @GET
+    @Path("findForCed/cedula={cedula}")
+    @Produces({"application/json; charset=UTF-8", "application/json"})
+    public String findForCedulaDatos(@PathParam("cedula") String cedula) {
+        TypedQuery<Personas> q;
+        q = getEntityManager().createNamedQuery("Personas.findByCedula", Personas.class);
+        q.setParameter("cedula", cedula);
+        Personas persona;
+        try {
+            persona = q.getSingleResult();
+        } catch (NoResultException e) {
+            return "false";
+        }
+        return "{\"apellidos\":\"" + persona.getApellidos()
+                + "\",\"cedula\":\"" + persona.getCedula()
+                + "\",\"edad\":" + persona.getEdad()
+                + ",\"fechaHoraModificacion\":\"" + persona.getFechaHoraModificacion()
+                + "\",\"fechaHoraRegistro\":\"" + persona.getFechaHoraRegistro()
+                + "\",\"idPersona\":" + persona.getIdPersona()
+                + ",\"nombres\":\"" + persona.getNombres() + "\"}";
+    }
+    
     @POST
     @Override
     @Consumes({"application/xml", "application/json"})
@@ -111,11 +133,11 @@ public class PersonasFacadeREST extends AbstractFacade<Personas> {
     @Path("existePorCedula/cedula={cedula}")
     @Produces("text/plain")
     public Boolean existePorCedula(@PathParam("cedula") String cedula) {
-        Boolean res=true;
-        if (buscaPersona(cedula)==null) {
-            res=false;
+        Boolean res = true;
+        if (buscaPersona(cedula) == null) {
+            res = false;
         }
-        return res; 
+        return res;
     }
 
     @POST
@@ -125,7 +147,7 @@ public class PersonasFacadeREST extends AbstractFacade<Personas> {
             @FormParam("nombres") String nombres,
             @FormParam("apellidos") String apellidos,
             @FormParam("edad") Integer edad) {
-        if (buscaPersona(cedula)==null) {
+        if (buscaPersona(cedula) == null) {
             try {
                 Personas persona = new Personas(cedula, nombres, apellidos, edad, new Date(), new Date());
                 super.create(persona);
