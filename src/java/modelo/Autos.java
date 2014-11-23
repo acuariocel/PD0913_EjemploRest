@@ -58,6 +58,10 @@ public class Autos implements Serializable {
         this.idAuto = idAuto;
         this.placa = placa;
     }
+    public Autos(String placa,String color) {
+        this.color = color;
+        this.placa = placa;
+    }
 
     public Integer getIdAuto() {
         return idAuto;

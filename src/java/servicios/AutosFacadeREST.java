@@ -5,12 +5,16 @@
  */
 package servicios;
 
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -18,6 +22,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import modelo.Autos;
+import modelo.Personas;
 
 /**
  *
@@ -86,4 +91,49 @@ public class AutosFacadeREST extends AbstractFacade<Autos> {
         return em;
     }
     
+    @GET
+    @Path("findForPlaca/placa={pla}")
+    @Produces({"application/json; charset=UTF-8", "application/json"})
+    public String findForCedulaDatos(@PathParam("pla") String placa) {
+        TypedQuery<Autos> q;
+        q = getEntityManager().createNamedQuery("Autos.findByPlaca", Autos.class);
+        q.setParameter("placa", placa);
+        Autos auto;
+        try {
+            auto = q.getSingleResult();
+        } catch (NoResultException e) {
+            return false+"";
+        }
+        return "{\"placa\":\"" + auto.getPlaca()
+                + "\",\"color\":\"" + auto.getColor() + "\"}";
+    }
+    public Autos buscaAuto(String placa) {
+        TypedQuery<Autos> q;
+        q = getEntityManager().createNamedQuery("Autos.findByPlaca", Autos.class);
+        q.setParameter("placa", placa);
+        try {
+            return q.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+    @POST
+    @Path("registro")
+    @Produces({"text/plain; charset=UTF-8", "application/json"})
+    public String createPorParametros(@FormParam("placa") String placa,
+            @FormParam("color") String color) {
+        Autos auto=buscaAuto(placa);
+        if (auto == null) {
+            try {
+                auto = new Autos(placa, color);
+                super.create(auto);
+                return true+"";
+            } catch (NullPointerException e) {
+                return false+"";
+            }
+        } else {
+            return auto.getColor();
+        }
+    }
+
 }

@@ -142,21 +142,22 @@ public class PersonasFacadeREST extends AbstractFacade<Personas> {
 
     @POST
     @Path("registro")
-    @Produces({"text/plain", "application/json"})
-    public Boolean createPorParametros(@FormParam("cedula") String cedula,
+    @Produces({"text/plain; charset=UTF-8", "application/json"})
+    public String createPorParametros(@FormParam("cedula") String cedula,
             @FormParam("nombres") String nombres,
             @FormParam("apellidos") String apellidos,
             @FormParam("edad") Integer edad) {
-        if (buscaPersona(cedula) == null) {
+        Personas p=buscaPersona(cedula);
+        if (p == null) {
             try {
                 Personas persona = new Personas(cedula, nombres, apellidos, edad, new Date(), new Date());
                 super.create(persona);
-                return true;
+                return true+"";
             } catch (NullPointerException e) {
-                return false;
+                return false+"";
             }
         } else {
-            return false;
+            return p.getNombres()+" "+p.getApellidos();
         }
     }
 
